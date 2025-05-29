@@ -19,6 +19,9 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
+
+            // Clave foránea a la tabla companies
+            $table->foreignId('company_id')->nullable()->constrained()->nullOnDelete();
         });
     }
 

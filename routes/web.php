@@ -1,6 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Livewire\CompanyManager;
+use App\Livewire\Admin\UserManager;
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/users', UserManager::class)->name('admin.users');
+});
+
 
 /*
 |--------------------------------------------------------------------------
@@ -12,6 +19,7 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+Route::get('/companies', CompanyManager::class)->middleware('auth');
 
 Route::view('/', 'welcome');
 
