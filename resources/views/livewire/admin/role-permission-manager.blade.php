@@ -8,7 +8,7 @@
     @endif
 
     <div class="mb-4">
-        <label>Seleccionar Usuario</label>
+        <label class="block font-medium mb-1">Seleccionar Usuario</label>
         <select wire:model="selectedUserId" class="w-full border p-2 rounded">
             <option value="">-- Seleccionar --</option>
             @foreach ($users as $user)
@@ -19,23 +19,33 @@
 
     @if ($selectedUserId)
         <div class="mb-4">
-            <label>Roles</label>
+            <label class="block font-medium mb-1">Roles</label>
             @foreach ($roles as $role)
-                <div>
-                    <input type="checkbox" wire:model="userRoles" value="{{ $role }}"> {{ $role }}
+                <div class="flex items-center mb-1">
+                    <input type="checkbox" wire:model="userRoles" value="{{ $role }}" class="mr-2">
+                    <span>{{ $role }}</span>
                 </div>
             @endforeach
+<pre class="text-xs bg-gray-100 p-2 rounded mt-2">
+Usuario seleccionado: {{ $selectedUserId }}
+Roles cargados: {{ json_encode($userRoles) }}
+Permisos cargados: {{ json_encode($userPermissions) }}
+</pre>
+
         </div>
 
         <div class="mb-4">
-            <label>Permisos</label>
+            <label class="block font-medium mb-1">Permisos</label>
             @foreach ($permissions as $permission)
-                <div>
-                    <input type="checkbox" wire:model="userPermissions" value="{{ $permission }}"> {{ $permission }}
+                <div class="flex items-center mb-1">
+                    <input type="checkbox" wire:model="userPermissions" value="{{ $permission }}" class="mr-2">
+                    <span>{{ $permission }}</span>
                 </div>
             @endforeach
         </div>
 
-        <button wire:click="save" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Guardar</button>
+        <button wire:click="save" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            Guardar
+        </button>
     @endif
 </div>

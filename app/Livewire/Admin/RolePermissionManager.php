@@ -10,49 +10,59 @@ use Spatie\Permission\Models\Permission;
 
 class RolePermissionManager extends Component
 {
+    public $users;
     public $roles;
     public $permissions;
-    public $selectedRole = null;
-    public $selectedPermissions = [];
+
+    public $selectedUserId;
+    public $userRoles = [];
+    public $userPermissions = [];
 
     public function mount()
     {
-        $this->roles = Role::all(); // corregido aquí
-        $this->permissions = Permission::all();
+        $this->users = User::all();
+        $this->roles = Role::pluck('name')->toArray();
+        $this->permissions = Permission::pluck('name')->toArray();
     }
 
-    public function updatedSelectedRole($value)
+    public function updatedSelectedUserId($userId)
+{
+    $user = User::find($userId);
+    $this->userRoles = $user->roles->pluck('name')->toArray();
+    $this->userPermissions = $user->getAllPermissions()->pluck('name')->toArray();
+
+    \Log::info('Usuario seleccionado:', [
+        'id' => $user->id,
+        'roles' => $this->userRoles,
+        'permissions' => $this->userPermissions
+    ]);
+}
+
+    public function save()
     {
-        $role = Role::findById($value);
-        $this->selectedPermissions = $role->permissions->pluck('name')->toArray();
-    }
+        $user = User::findOrFail($this->selectedUserId);
 
-    public function savePermissions()
-    {
-        if (!auth()->user()->hasRole('SuperAdmin')) {
-            abort(403);
-        }
+        $originalRoles = $user->roles->pluck('name')->toArray();
+        $originalPermissions = $user->getAllPermissions()->pluck('name')->toArray();
 
-        $role = Role::findOrFail($this->selectedRole);
-        $original = $role->permissions->pluck('name')->toArray();
+        // Sync roles y permisos
+        $user->syncRoles($this->userRoles);
+        $user->syncPermissions($this->userPermissions);
 
-        $role->syncPermissions($this->selectedPermissions);
-
-        $changes = [
-            'before' => $original,
-            'after' => $this->selectedPermissions,
-        ];
-
+        // Registrar en logs
         AuditLog::create([
             'actor_id' => auth()->id(),
-            'user_id' => null,
-            'action' => 'update_permissions',
-            'target_model' => Role::class,
-            'target_id' => $role->id,
-            'changes' => $changes,
+            'user_id' => $user->id,
+            'action' => 'update_roles_permissions',
+            'target_model' => User::class,
+            'target_id' => $user->id,
+            'changes' => [
+                'roles' => ['before' => $originalRoles, 'after' => $this->userRoles],
+                'permissions' => ['before' => $originalPermissions, 'after' => $this->userPermissions],
+            ],
         ]);
 
-        session()->flash('success', 'Permisos actualizados correctamente.');
+        session()->flash('success', 'Roles y permisos actualizados correctamente.');
     }
 
     public function render()
@@ -60,3 +70,4 @@ class RolePermissionManager extends Component
         return view('livewire.admin.role-permission-manager');
     }
 }
+
