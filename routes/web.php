@@ -3,6 +3,12 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Livewire\CompanyManager;
 use App\Livewire\Admin\UserManager;
+use App\Livewire\Admin\RolePermissionManager;
+
+Route::middleware(['auth', 'role:SuperAdmin'])->group(function () {
+    Route::get('/admin/roles', RolePermissionManager::class)->name('admin.roles');
+});
+
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin/users', UserManager::class)->name('admin.users');
