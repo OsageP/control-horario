@@ -9,12 +9,12 @@
 
     <div class="mb-4">
         <label class="block font-medium mb-1">Seleccionar Usuario</label>
-        <select wire:model="selectedUserId" class="w-full border p-2 rounded">
-            <option value="">-- Seleccionar --</option>
-            @foreach ($users as $user)
-                <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
-            @endforeach
-        </select>
+        <select wire:model.change="selectedUserId" class="w-full border p-2 rounded">
+    <option value="">-- Seleccionar --</option>
+    @foreach ($users as $user)
+        <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
+    @endforeach
+</select>
     </div>
 
     @if ($selectedUserId)
@@ -37,9 +37,9 @@
                 </div>
             @endforeach
         </div>
-
+     @endif   
         <button wire:click="save" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
             Guardar
         </button>
-    @endif
+    
 </div>

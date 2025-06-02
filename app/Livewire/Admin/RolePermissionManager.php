@@ -10,33 +10,32 @@ use Spatie\Permission\Models\Permission;
 
 class RolePermissionManager extends Component
 {
-    public $users = [];
-    public $roles = [];
-    public $permissions = [];
+    public $selectedUserId;
+public $userRoles = [];
+public $userPermissions = [];
+public $roles = [];
+public $permissions = [];
+public $users = [];
 
-    public $selectedUserId = null;
-    public $userRoles = [];
-    public $userPermissions = [];
 
     public function mount()
-    {
-        $this->users = User::all();
-        $this->roles = Role::pluck('name', 'id')->toArray(); // clave => valor
-        $this->permissions = Permission::pluck('name', 'id')->toArray();
-    }
-
+{
+    $this->users = User::all();
+    $this->roles = Role::pluck('name', 'id')->toArray();
+    $this->permissions = Permission::pluck('name', 'id')->toArray();
+}
     public function updatedSelectedUserId($value)
-    {
-        $user = User::find($value);
-        if (!$user) {
-            $this->userRoles = [];
-            $this->userPermissions = [];
-            return;
-        }
-
-        $this->userRoles = $user->roles->pluck('id')->toArray();
-        $this->userPermissions = $user->permissions->pluck('id')->toArray();
+{
+    if (!$value) {
+        $this->userRoles = [];
+        $this->userPermissions = [];
+        return;
     }
+
+    $user = User::find($value);
+    $this->userRoles = $user->roles->pluck('id')->toArray();
+    $this->userPermissions = $user->permissions->pluck('id')->toArray();
+}
 
     public function save()
     {
