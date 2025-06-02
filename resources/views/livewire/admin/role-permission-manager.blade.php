@@ -26,12 +26,6 @@
                     <span>{{ $role }}</span>
                 </div>
             @endforeach
-<pre class="text-xs bg-gray-100 p-2 rounded mt-2">
-Usuario seleccionado: {{ $selectedUserId }}
-Roles cargados: {{ json_encode($userRoles) }}
-Permisos cargados: {{ json_encode($userPermissions) }}
-</pre>
-
         </div>
 
         <div class="mb-4">
