@@ -4,9 +4,9 @@ namespace App\Livewire\Admin;
 
 use Livewire\Component;
 use App\Models\User;
+use App\Models\AuditLog;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
-use App\Models\AuditLog;
 
 class RolePermissionManager extends Component
 {
@@ -21,13 +21,19 @@ class RolePermissionManager extends Component
     public function mount()
     {
         $this->users = User::all();
-        $this->roles = Role::pluck('name', 'id')->toArray();
+        $this->roles = Role::pluck('name', 'id')->toArray(); // clave => valor
         $this->permissions = Permission::pluck('name', 'id')->toArray();
     }
 
     public function updatedSelectedUserId($value)
     {
         $user = User::find($value);
+        if (!$user) {
+            $this->userRoles = [];
+            $this->userPermissions = [];
+            return;
+        }
+
         $this->userRoles = $user->roles->pluck('id')->toArray();
         $this->userPermissions = $user->permissions->pluck('id')->toArray();
     }
@@ -52,9 +58,9 @@ class RolePermissionManager extends Component
             'target_id' => $user->id,
             'changes' => [
                 'roles_before' => $oldRoles,
-                'roles_after' => $this->userRoles,
+                'roles_after' => Role::whereIn('id', $this->userRoles)->pluck('name')->toArray(),
                 'permissions_before' => $oldPermissions,
-                'permissions_after' => $this->userPermissions,
+                'permissions_after' => Permission::whereIn('id', $this->userPermissions)->pluck('name')->toArray(),
             ],
         ]);
 

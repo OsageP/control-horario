@@ -5,15 +5,18 @@ use App\Http\Livewire\CompanyManager;
 use App\Livewire\Admin\UserManager;
 use App\Livewire\Admin\RolePermissionManager;
 
-Route::middleware(['auth', 'role:SuperAdmin'])->group(function () {
-    Route::get('/admin/roles', RolePermissionManager::class)->name('admin.roles');
-});
-
-
 Route::middleware(['auth'])->group(function () {
-    Route::get('/admin/users', UserManager::class)->name('admin.users');
-});
+    // Rutas accesibles solo si el usuario tiene rol SuperAdmin
+    Route::middleware(['role:SuperAdmin'])->group(function () {
+        Route::get('/admin/roles', RolePermissionManager::class)
+             ->name('admin.roles');
+        // (Otras rutas de administración solo para SuperAdmins, p. ej. gestión de permisos, logs, etc.)
+    });
 
+    // Otras rutas de admin o usuario general
+    Route::get('/admin/users', UserManager::class)
+         ->name('admin.users');
+});
 
 /*
 |--------------------------------------------------------------------------
