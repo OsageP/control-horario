@@ -6,38 +6,20 @@ use App\Livewire\Admin\UserManager;
 use App\Livewire\Admin\RolePermissionManager;
 
 Route::middleware(['auth'])->group(function () {
-    // Rutas accesibles solo si el usuario tiene rol SuperAdmin
-    Route::middleware(['role:SuperAdmin'])->group(function () {
-        Route::get('/admin/roles', RolePermissionManager::class)
-             ->name('admin.roles');
-        // (Otras rutas de administración solo para SuperAdmins, p. ej. gestión de permisos, logs, etc.)
+    // ✅ Ahora protegida por permiso 'view roles', no por rol
+    Route::middleware(['permission:view roles'])->group(function () {
+        Route::get('/admin/roles', RolePermissionManager::class)->name('admin.roles');
     });
 
-    // Otras rutas de admin o usuario general
-    Route::get('/admin/users', UserManager::class)
-         ->name('admin.users');
+    Route::get('/admin/users', UserManager::class)->name('admin.users');
 });
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
 Route::get('/companies', CompanyManager::class)->middleware('auth');
 
 Route::view('/', 'welcome');
 
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+Route::view('dashboard', 'dashboard')->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::view('profile', 'profile')
-    ->middleware(['auth'])
-    ->name('profile');
+Route::view('profile', 'profile')->middleware(['auth'])->name('profile');
 
 require __DIR__.'/auth.php';

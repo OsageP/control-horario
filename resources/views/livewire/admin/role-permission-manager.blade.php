@@ -37,9 +37,15 @@
                 </div>
             @endforeach
         </div>
-     @endif   
-        <button wire:click="save" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-            Guardar
-        </button>
-    
+   
+     @if (auth()->user()->can('edit roles'))
+    <button wire:click="save" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        Guardar
+    </button>
+@else
+    <div class="mt-4 p-3 bg-yellow-100 text-yellow-800 border border-yellow-300 rounded">
+        No tienes permisos para editar roles o permisos. Vista en modo solo lectura.
+    </div>
+@endif
+       @endif  
 </div>
