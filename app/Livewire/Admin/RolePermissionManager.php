@@ -21,15 +21,15 @@ class RolePermissionManager extends Component
     public function mount()
     {
         $this->users = User::all();
-        $this->roles = Role::pluck('name')->toArray();
-        $this->permissions = Permission::pluck('name')->toArray();
+        $this->roles = Role::pluck('name', 'id')->toArray();
+        $this->permissions = Permission::pluck('name', 'id')->toArray();
     }
 
     public function updatedSelectedUserId($value)
     {
         $user = User::find($value);
-        $this->userRoles = $user->roles->pluck('name')->toArray();
-        $this->userPermissions = $user->permissions->pluck('name')->toArray();
+        $this->userRoles = $user->roles->pluck('id')->toArray();
+        $this->userPermissions = $user->permissions->pluck('id')->toArray();
     }
 
     public function save()

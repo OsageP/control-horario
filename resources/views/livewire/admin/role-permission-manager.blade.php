@@ -20,22 +20,22 @@
     @if ($selectedUserId)
         <div class="mb-4">
             <label class="block font-medium mb-1">Roles</label>
-            @foreach ($roles as $role)
-                <div class="flex items-center mb-1">
-                    <input type="checkbox" wire:model="userRoles" value="{{ $role }}" class="mr-2">
-                    <span>{{ $role }}</span>
-                </div>
-            @endforeach
+            @foreach ($roles as $id => $role)
+    <div class="flex items-center mb-1">
+        <input type="checkbox" wire:model="userRoles" value="{{ $id }}" class="mr-2">
+        <span>{{ $role }}</span>
+    </div>
+@endforeach
         </div>
 
         <div class="mb-4">
             <label class="block font-medium mb-1">Permisos</label>
-            @foreach ($permissions as $permission)
-                <div class="flex items-center mb-1">
-                    <input type="checkbox" wire:model="userPermissions" value="{{ $permission }}" class="mr-2">
-                    <span>{{ $permission }}</span>
-                </div>
-            @endforeach
+            @foreach ($permissions as $id => $permission)
+    <div class="flex items-center mb-1">
+        <input type="checkbox" wire:model="userPermissions" value="{{ $id }}" class="mr-2">
+        <span>{{ $permission }}</span>
+    </div>
+@endforeach
         </div>
 
         <button wire:click="save" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
