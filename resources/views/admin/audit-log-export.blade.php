@@ -5,8 +5,8 @@
     <title>Exportación de Logs de Auditoría</title>
     <style>
         body {
-            font-family: DejaVu Sans, sans-serif;
-            font-size: 11px;
+            font-family: sans-serif;
+            font-size: 12px;
             margin: 20px;
         }
         h2 {
@@ -16,62 +16,62 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            table-layout: auto;
         }
         th, td {
-            border: 1px solid #ddd;
-            padding: 5px;
-            text-align: left;
-            vertical-align: top;
+            border: 1px solid #999;
+            padding: 6px;
+            word-wrap: break-word;
         }
         th {
-            background-color: #f0f0f0;
+            background-color: #f2f2f2;
         }
         .label {
             padding: 2px 4px;
-            font-size: 10px;
+            font-size: 11px;
             border-radius: 3px;
-            color: white;
+            font-weight: bold;
+            color: #fff;
         }
         .created { background-color: #28a745; }
-        .updated { background-color: #ffc107; color: black; }
+        .updated { background-color: #ffc107; color: #000; }
         .deleted { background-color: #dc3545; }
+        .default { background-color: #6c757d; }
     </style>
 </head>
 <body>
 
-    <h2>Logs de Auditoría</h2>
+<h2>Logs de Auditoría</h2>
 
-    <table>
-        <thead>
+<table>
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Entidad</th>
+            <th>Acción</th>
+            <th>Usuario</th>
+            <th>Descripción</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach ($logs as $log)
+            @php
+                $colorClass = match($log->action) {
+                    'created' => 'created',
+                    'updated' => 'updated',
+                    'deleted' => 'deleted',
+                    default => 'default',
+                };
+            @endphp
             <tr>
-                <th>Fecha</th>
-                <th>Entidad</th>
-                <th>Acción</th>
-                <th>Usuario</th>
-                <th>Descripción</th>
+                <td>{{ $log->created_at->format('d/m/Y H:i') }}</td>
+                <td>{{ ucfirst($log->entity_type) }} #{{ $log->entity_id }}</td>
+                <td><span class="label {{ $colorClass }}">{{ ucfirst($log->action) }}</span></td>
+                <td>{{ $log->actor->name ?? 'Sistema' }}</td>
+                <td>{{ $log->description ?? '-' }}</td>
             </tr>
-        </thead>
-        <tbody>
-            @forelse ($logs as $log)
-                <tr>
-                    <td>{{ $log->created_at->format('d/m/Y H:i') }}</td>
-                    <td>{{ ucfirst($log->entity_type) }} #{{ $log->entity_id }}</td>
-                    <td>
-                        <span class="label {{ strtolower($log->action) }}">
-                            {{ ucwords(str_replace('_', ' ', $log->action)) }}
-                        </span>
-                    </td>
-                    <td>{{ $log->actor->name ?? 'Sistema' }}</td>
-                    <td>{{ $log->description ?? '-' }}</td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="5">No hay registros disponibles.</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
+        @endforeach
+    </tbody>
+</table>
 
 </body>
 </html>

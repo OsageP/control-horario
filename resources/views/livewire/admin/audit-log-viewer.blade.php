@@ -2,24 +2,36 @@
     <h2 class="text-2xl font-bold mb-4">Registro de Auditoría</h2>
 
     <!-- Filtros -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <input type="text" wire:model.defer="entityType" class="p-2 border rounded" placeholder="Entidad (user, role...)">
-        <select wire:model.defer="action" class="p-2 border rounded">
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+        <input type="text" wire:model.live="entityType" class="p-2 border rounded" placeholder="Entidad (user, role...)">
+        <select wire:model.live="action" class="p-2 border rounded">
             <option value="">-- Acción --</option>
             <option value="created">Creación</option>
             <option value="updated">Actualización</option>
             <option value="deleted">Eliminación</option>
         </select>
-        <select wire:model.defer="userId" class="p-2 border rounded">
+        <select wire:model.live="userId" class="p-2 border rounded">
             <option value="">-- Usuario --</option>
             @foreach ($users as $user)
                 <option value="{{ $user->id }}">{{ $user->name }}</option>
             @endforeach
         </select>
-        <div class="flex space-x-2">
-            <input type="date" wire:model.defer="dateFrom" class="p-2 border rounded w-1/2">
-            <input type="date" wire:model.defer="dateTo" class="p-2 border rounded w-1/2">
-        </div>
+        <input type="date" wire:model.live="dateFrom" class="p-2 border rounded">
+        <input type="date" wire:model.live="dateTo" class="p-2 border rounded">
+    </div>
+
+    <!-- Barra de búsqueda y acciones -->
+    <div class="mb-4 flex items-center gap-4">
+        <input type="text" wire:model.live="search" placeholder="Buscar en logs..." class="p-2 border rounded w-full">
+        <button wire:click="resetFilters" class="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded">
+            Limpiar filtros
+        </button>
+        <button wire:click="export('csv')" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+            Exportar CSV
+        </button>
+        <button wire:click="export('pdf')" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
+            Exportar PDF
+        </button>
     </div>
 
     <!-- Tabla -->
@@ -35,14 +47,14 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($logs as $log)
+                @forelse ($logs as $log)
                     <tr class="border-b">
                         <td class="p-2">{{ $log->created_at->format('d/m/Y H:i') }}</td>
                         <td class="p-2">{{ ucfirst($log->entity_type) }} #{{ $log->entity_id }}</td>
                         <td class="p-2 text-center">
                             <span class="px-2 py-1 rounded text-white text-sm
                                 @if($log->action === 'created') bg-green-600
-                                @elseif($log->action === 'updated') bg-yellow-500
+                                @elseif($log->action === 'updated') bg-yellow-500 text-black
                                 @elseif($log->action === 'deleted') bg-red-600
                                 @else bg-gray-500
                                 @endif">
@@ -54,7 +66,13 @@
                             <button wire:click="$set('showDetails', {{ $log->id }})" class="text-blue-600 underline">Ver</button>
                         </td>
                     </tr>
-                @endforeach
+                @empty
+                    <tr>
+                        <td colspan="5" class="text-center p-4 text-gray-500">
+                            No se encontraron registros con los filtros seleccionados.
+                        </td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
 
@@ -91,12 +109,21 @@
             </div>
         @endif
     @endif
-    <div class="flex justify-between mb-4">
-    <input type="text" wire:model="search" placeholder="Buscar en logs..." class="p-2 border rounded w-1/2" />
-    <div>
-        <button wire:click="export('csv')" class="bg-green-600 text-white px-3 py-1 rounded mr-2">Exportar CSV</button>
-        <button wire:click="export('pdf')" class="bg-blue-600 text-white px-3 py-1 rounded">Exportar PDF</button>
-    </div>
-</div>
+    <!-- Toast -->
+<div
+    x-data="{ show: @entangle('toastMessage').defer, type: @entangle('toastType').defer }"
+    x-init="show && setTimeout(() => show = null, 3500)"
+    x-show="show"
+    x-transition
+    class="fixed bottom-4 right-4 px-4 py-2 rounded shadow-lg text-sm z-50"
+    :class="{
+        'bg-green-600 text-white': type === 'success',
+        'bg-yellow-500 text-black': type === 'warning',
+        'bg-red-600 text-white': type === 'error',
+    }"
+    x-text="show"
+    style="display: none;"
+></div>
 
 </div>
+
