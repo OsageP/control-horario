@@ -106,24 +106,27 @@
                     </div>
                     <button wire:click="$set('showDetails', null)" class="mt-4 bg-gray-800 text-white px-4 py-2 rounded">Cerrar</button>
                 </div>
+               
             </div>
+            
         @endif
     @endif
     <!-- Toast -->
-<div
-    x-data="{ show: @entangle('toastMessage').defer, type: @entangle('toastType').defer }"
-    x-init="show && setTimeout(() => show = null, 3500)"
-    x-show="show"
-    x-transition
-    class="fixed bottom-4 right-4 px-4 py-2 rounded shadow-lg text-sm z-50"
-    :class="{
-        'bg-green-600 text-white': type === 'success',
-        'bg-yellow-500 text-black': type === 'warning',
-        'bg-red-600 text-white': type === 'error',
-    }"
-    x-text="show"
-    style="display: none;"
-></div>
+@if ($toastMessage)
+    <div
+        class="mb-4 px-4 py-2 rounded shadow text-white transition duration-300 ease-in-out
+            @if($toastType === 'success') bg-green-600
+            @elseif($toastType === 'error') bg-red-600
+            @elseif($toastType === 'warning') bg-yellow-500 text-black
+            @else bg-blue-600
+            @endif"
+        x-data="{ show: true }"
+        x-show="show"
+        x-init="setTimeout(() => show = false, 3000)"
+    >
+        {{ $toastMessage }}
+    </div>
+@endif
 
 </div>
 

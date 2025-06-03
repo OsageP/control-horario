@@ -122,5 +122,4 @@ public function export($format)
 
     abort(400, 'Formato no válido');
 }
-
 }
