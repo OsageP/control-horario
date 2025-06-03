@@ -4,6 +4,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Livewire\CompanyManager;
 use App\Livewire\Admin\UserManager;
 use App\Livewire\Admin\RolePermissionManager;
+use App\Livewire\Admin\AuditLogViewer;
+
+Route::middleware(['auth', 'role:SuperAdmin'])->group(function () {
+    Route::get('/admin/logs', AuditLogViewer::class)->name('admin.logs');
+});
 
 Route::middleware(['auth'])->group(function () {
     // ✅ Ahora protegida por permiso 'view roles', no por rol

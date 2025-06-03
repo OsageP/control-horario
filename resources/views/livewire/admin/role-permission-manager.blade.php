@@ -27,10 +27,8 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 @foreach ($roles as $id => $name)
                     <div class="flex items-center">
-                        <input type="checkbox" 
-                               wire:model="userRoles" 
-                               value="{{ $id }}" 
-                               class="mr-2 rounded text-blue-600">
+                        <!-- Checkbox para seleccionar rol solo activo si tienes permiso -->
+                         <input type="checkbox" wire:model="userRoles"value="{{ $id }}"  class="mr-2" @disabled(!auth()->user()->can('edit roles'))>
                         <span>{{ $name }}</span>
                     </div>
                 @endforeach
@@ -60,11 +58,8 @@
                                 <div class="space-y-2">
                                     @foreach ($groupedPermissions[$action] as $permission)
                                         <div class="flex items-center">
-                                            <!-- Checkbox para seleccionar permiso -->
-                                            <input type="checkbox" 
-                                                   wire:model="userPermissions" 
-                                                   value="{{ $permission['id'] }}" 
-                                                   class="mr-2 rounded text-blue-600">
+                                            <!-- Checkbox para seleccionar permiso solo activo si tienes permiso -->
+                                            <input type="checkbox" wire:model="userPermissions" value="{{ $permission['id'] }}" class="mr-2" @disabled(!auth()->user()->can('edit roles'))>
                                             <!-- Nombre del permiso -->
                                             <span class="capitalize">{{ $permission['display_name'] }}</span>
                                         </div>

@@ -1,32 +1,35 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AuditLog extends Model
 {
     protected $fillable = [
-        'user_id',
-        'actor_id',
+        'entity_type',
+        'entity_id',
         'action',
-        'target_model',
-        'target_id',
-        'changes',
+        'old_values',
+        'new_values',
+        'actor_id',
+        'ip_address',
+        'user_agent',
+        'description',
     ];
 
     protected $casts = [
-        'changes' => 'array',
+        'old_values' => 'array',
+        'new_values' => 'array',
     ];
 
-    public function user(): BelongsTo
+    public function actor()
     {
-        return $this->belongsTo(User::class); // Usuario afectado
+        return $this->belongsTo(User::class, 'actor_id');
     }
 
-    public function actor(): BelongsTo
+    public function entity()
     {
-        return $this->belongsTo(User::class, 'actor_id'); // Quien hizo el cambio
+        return $this->morphTo();
     }
 }
+

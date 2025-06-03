@@ -7,7 +7,6 @@ use App\Models\User;
 use App\Models\AuditLog;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
-
 class RolePermissionManager extends Component
 {
     // Propiedades públicas del componente
@@ -150,23 +149,22 @@ class RolePermissionManager extends Component
 
         // Registrar en el log de auditoría
         AuditLog::create([
-            'actor_id' => auth()->id(),
-            'user_id' => $user->id,
-            'action' => 'update_user_roles_permissions',
-            'target_model' => User::class,
-            'target_id' => $user->id,
-            'changes' => [
-                'roles' => [
-                    'before' => $originalRoles,
-                    'after' => $roleNames,
-                ],
-                'permissions' => [
-                    'before' => $originalPermissions,
-                    'after' => $permissionNames,
-                ],
-            ],
-        ]);
-
+    'entity_type' => 'user', // o User::class si prefieres
+    'entity_id' => $user->id,
+    'action' => 'update_user_roles_permissions',
+    'old_values' => [
+        'roles' => $originalRoles,
+        'permissions' => $originalPermissions,
+    ],
+    'new_values' => [
+        'roles' => $roleNames,
+        'permissions' => $permissionNames,
+    ],
+    'actor_id' => auth()->id(),
+    'ip_address' => request()->ip(),
+    'user_agent' => request()->userAgent(),
+    'description' => 'Se actualizaron los roles y permisos del usuario',
+]);
         // Mostrar mensaje de éxito
         session()->flash('success', 'Roles y permisos actualizados correctamente.');
     }
