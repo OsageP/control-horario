@@ -4,17 +4,25 @@ use App\Livewire\Actions\Logout;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Volt\Component;
 
-new class extends Component
-{
     /**
      * Cierra la sesión del usuario.
      */
-    public function logout(Logout $logout): void
+
+new class extends Component
+{
+    public function logout(Logout $logout)
     {
-        $logout();
-        $this->redirect('/', navigate: true);
+        try {
+            $logout();
+            session()->flash('success', 'Sesión cerrada correctamente');
+            return $this->redirect('/login', navigate: true);
+        } catch (\Exception $e) {
+            session()->flash('error', 'Error al cerrar sesión: '.$e->getMessage());
+            return $this->redirect('/');
+        }
     }
-}; ?>
+};
+ ?>
 
 <nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
     <!-- Primary Navigation Menu -->
@@ -74,6 +82,10 @@ new class extends Component
                         <button wire:click="logout" class="block w-full px-4 py-2 text-left text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out">
                             {{ __('Log Out') }}
                         </button>
+                        <form method="POST" action="{{ route('logout') }}">
+    @csrf
+    <button type="submit">Cerrar sesión</button>
+</form>
                     </x-slot>
                 </x-dropdown>
                 @endauth
