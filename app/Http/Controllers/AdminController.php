@@ -1,6 +1,13 @@
 <?php
 
-public function settings()
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class AdminController extends Controller
 {
-    return view('admin.settings'); // Necesitarás crear esta vista
+    public function settings()
+    {
+        return view('admin.settings'); // o lo que corresponda
+    }
 }

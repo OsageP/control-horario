@@ -46,16 +46,16 @@ new class extends Component {
                         <div class="border-t border-gray-200"></div>
 
                         <!-- Administration Section -->
-                        @canany(['view_users', 'view_roles', 'view_companies', 'view_logs'])
+                        @role(['SuperAdmin', 'Administrador'])
                         <div class="block px-4 py-2 text-xs text-gray-400">
                             {{ __('Administración') }}
                         </div>
 
-                        @can('view_companies')
+                        @role('SuperAdmin')
                         <x-dropdown-link :href="route('companies.index')">
                             {{ __('Empresas') }}
                         </x-dropdown-link>
-                        @endcan
+                        @endrole
 
                         @can('view_users')
                         <x-dropdown-link :href="route('admin.users.index')">
@@ -82,7 +82,7 @@ new class extends Component {
                         @endrole
 
                         <div class="border-t border-gray-200"></div>
-                        @endcanany
+                        @endrole
 
                         <!-- Logout -->
                         <form method="POST" action="{{ route('logout') }}">
@@ -129,7 +129,7 @@ new class extends Component {
                     {{ __('Administrar Cuenta') }}
                 </x-responsive-nav-link>
 
-                @canany(['view_users', 'view_roles', 'view_companies', 'view_logs'])
+                @role(['SuperAdmin', 'Administrador'])
                 <x-responsive-nav-link :href="route('companies.index')">
                     {{ __('Empresas') }}
                 </x-responsive-nav-link>
@@ -151,7 +151,7 @@ new class extends Component {
                     {{ __('Configuración') }}
                 </x-responsive-nav-link>
                 @endrole
-                @endcanany
+                @endrole
 
                 <!-- Logout -->
                 <form method="POST" action="{{ route('logout') }}">
