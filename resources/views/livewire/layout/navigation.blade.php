@@ -1,10 +1,9 @@
 <?php
-
 use Illuminate\Support\Facades\Auth;
 use Livewire\Volt\Component;
 
 new class extends Component {
-    // Eliminado el método logout ya que usaremos el formulario tradicional
+    // Componente Livewire vacío (se usa el formulario tradicional para logout)
 }; ?>
 
 <nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
@@ -38,6 +37,23 @@ new class extends Component {
                     </x-slot>
 
                     <x-slot name="content">
+                        <!-- Debug: Verificar autenticación y roles -->
+                        @php
+                            $user = auth()->user();
+                            $isSuperAdmin = $user->hasRole('SuperAdmin');
+                            $isAdmin = $user->hasRole('Administrador');
+                            $isEmpresaAdmin = $user->hasRole('Administrador de Empresa');
+                            
+                            // Debug output
+                            \Log::debug('User Roles Check', [
+                                'isSuperAdmin' => $isSuperAdmin,
+                                'isAdmin' => $isAdmin,
+                                'isEmpresaAdmin' => $isEmpresaAdmin,
+                                'allRoles' => $user->getRoleNames(),
+                                'allPermissions' => $user->getAllPermissions()->pluck('name')
+                            ]);
+                        @endphp
+
                         <!-- Account Management -->
                         <x-dropdown-link :href="route('perfil.index')">
                             {{ __('Administrar Cuenta') }}
@@ -46,43 +62,43 @@ new class extends Component {
                         <div class="border-t border-gray-200"></div>
 
                         <!-- Administration Section -->
-                        @role(['SuperAdmin', 'Administrador'])
+                        @if($isSuperAdmin || $isAdmin || $isEmpresaAdmin)
                         <div class="block px-4 py-2 text-xs text-gray-400">
                             {{ __('Administración') }}
                         </div>
 
-                        @role('SuperAdmin')
+                        @if($isSuperAdmin)
                         <x-dropdown-link :href="route('companies.index')">
                             {{ __('Empresas') }}
                         </x-dropdown-link>
-                        @endrole
+                        @endif
 
-                        @can('view_users')
+                        @if($user->can('view_users'))
                         <x-dropdown-link :href="route('admin.users.index')">
                             {{ __('Usuarios') }}
                         </x-dropdown-link>
-                        @endcan
+                        @endif
 
-                        @can('view_roles')
+                        @if($user->can('view_roles'))
                         <x-dropdown-link :href="route('admin.roles.index')">
                             {{ __('Roles y permisos') }}
                         </x-dropdown-link>
-                        @endcan
+                        @endif
 
-                        @can('view_logs')
+                        @if($user->can('view_logs'))
                         <x-dropdown-link :href="route('admin.logs')">
                             {{ __('Auditoría') }}
                         </x-dropdown-link>
-                        @endcan
+                        @endif
 
-                        @role('SuperAdmin')
+                        @if($isSuperAdmin)
                         <x-dropdown-link :href="route('admin.settings')">
                             {{ __('Configuración') }}
                         </x-dropdown-link>
-                        @endrole
+                        @endif
 
                         <div class="border-t border-gray-200"></div>
-                        @endrole
+                        @endif
 
                         <!-- Logout -->
                         <form method="POST" action="{{ route('logout') }}">
@@ -117,7 +133,6 @@ new class extends Component {
             </x-responsive-nav-link>
         </div>
 
-        <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200">
             <div class="px-4">
                 <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
@@ -129,31 +144,45 @@ new class extends Component {
                     {{ __('Administrar Cuenta') }}
                 </x-responsive-nav-link>
 
-                @role(['SuperAdmin', 'Administrador'])
+                @php
+                    $user = auth()->user();
+                    $showAdminSection = $user->hasRole('SuperAdmin') || 
+                                       $user->hasRole('Administrador') || 
+                                       $user->hasRole('Administrador de Empresa');
+                @endphp
+
+                @if($showAdminSection)
+                @if($user->hasRole('SuperAdmin'))
                 <x-responsive-nav-link :href="route('companies.index')">
                     {{ __('Empresas') }}
                 </x-responsive-nav-link>
+                @endif
 
+                @if($user->can('view_users'))
                 <x-responsive-nav-link :href="route('admin.users.index')">
                     {{ __('Usuarios') }}
                 </x-responsive-nav-link>
+                @endif
 
+                @if($user->can('view_roles'))
                 <x-responsive-nav-link :href="route('admin.roles.index')">
                     {{ __('Roles y permisos') }}
                 </x-responsive-nav-link>
+                @endif
 
+                @if($user->can('view_logs'))
                 <x-responsive-nav-link :href="route('admin.logs')">
                     {{ __('Auditoría') }}
                 </x-responsive-nav-link>
+                @endif
 
-                @role('SuperAdmin')
+                @if($user->hasRole('SuperAdmin'))
                 <x-responsive-nav-link :href="route('admin.settings')">
                     {{ __('Configuración') }}
                 </x-responsive-nav-link>
-                @endrole
-                @endrole
+                @endif
+                @endif
 
-                <!-- Logout -->
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <x-responsive-nav-link :href="route('logout')"
