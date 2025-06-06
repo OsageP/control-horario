@@ -29,6 +29,8 @@ Route::middleware(['auth'])->group(function () {
 // Rutas de SuperAdmin
 Route::middleware(['auth', 'role:SuperAdmin'])->group(function () {
     Route::get('/admin/logs', AuditLogViewer::class)->name('admin.logs');
+    Route::get('/admin/settings', [AdminController::class, 'settings'])
+        ->name('admin.settings');
 });
 
 // Logout unificado
