@@ -39,7 +39,7 @@ new class extends Component {
 
                     <x-slot name="content">
                         <!-- Account Management -->
-                        <x-dropdown-link :href="route('profile.edit')">
+                        <x-dropdown-link :href="route('perfil.index')">
                             {{ __('Administrar Cuenta') }}
                         </x-dropdown-link>
 
@@ -125,7 +125,7 @@ new class extends Component {
             </div>
 
             <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
+                <x-responsive-nav-link :href="route('perfil.index')">
                     {{ __('Administrar Cuenta') }}
                 </x-responsive-nav-link>
 

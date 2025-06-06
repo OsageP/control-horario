@@ -31,6 +31,13 @@ Route::middleware(['auth', 'role:SuperAdmin'])->group(function () {
     Route::get('/admin/logs', AuditLogViewer::class)->name('admin.logs');
     Route::get('/admin/settings', [AdminController::class, 'settings'])
         ->name('admin.settings');
+    Route::get('/admin/configuracion', [AdminController::class, 'settings'])
+    ->name('admin.settings')
+    ->middleware(['auth', 'role:SuperAdmin']);
+});
+Route::controller(ProfileController::class)->group(function(){
+    Route::get('/perfil', 'index')->name('perfil.index'); // Nombre en español
+    Route::put('/perfil/actualizar', 'update')->name('perfil.update');
 });
 
 // Logout unificado
